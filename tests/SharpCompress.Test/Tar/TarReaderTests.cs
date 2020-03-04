@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using SharpCompress.Common;
 using SharpCompress.Readers;
 using SharpCompress.Readers.Tar;
@@ -36,11 +38,12 @@ namespace SharpCompress.Test.Tar
                         if (x % 2 == 0)
                         {
                             reader.WriteEntryToDirectory(SCRATCH_FILES_PATH,
-                                                         new ExtractionOptions()
-                                                         {
-                                                             ExtractFullPath = true,
-                                                             Overwrite = true
-                                                         });
+                                new ExtractionOptions()
+                                {
+                                    ExtractFullPath = true,
+                                    Overwrite = true
+                                },
+                                CancellationToken.None);
                         }
                     }
                 }
@@ -72,7 +75,7 @@ namespace SharpCompress.Test.Tar
         }
 
         [Fact]
-        public void Tar_BZip2_Entry_Stream()
+        public async Task Tar_BZip2_Entry_Stream()
         {
             using (Stream stream = File.OpenRead(Path.Combine(TEST_ARCHIVES_PATH, "Tar.tar.bz2")))
             using (var reader = TarReader.Open(stream))
@@ -95,7 +98,7 @@ namespace SharpCompress.Test.Tar
 
                             using (FileStream fs = File.OpenWrite(destinationFileName))
                             {
-                                entryStream.TransferTo(fs);
+                                await entryStream.TransferTo(fs, CancellationToken.None).ConfigureAwait(false);
                             }
                         }
                     }
@@ -118,7 +121,7 @@ namespace SharpCompress.Test.Tar
                     {
                         filePaths.Add(reader.Entry.Key);
                     }
-                }                
+                }
             }
 
             Assert.Equal(3, filePaths.Count);
@@ -203,23 +206,24 @@ namespace SharpCompress.Test.Tar
                         continue;
                     }
                     reader.WriteEntryToDirectory(SCRATCH_FILES_PATH,
-                                                 new ExtractionOptions()
-                                                 {
-                                                     ExtractFullPath = true,
-                                                     Overwrite = true,
-                                                     WriteSymbolicLink = (sourcePath, targetPath) =>
-                                                     {
-                                                         if (!isWindows)
-                                                         {
-                                                             var link = new Mono.Unix.UnixSymbolicLinkInfo(sourcePath);
-                                                             if (System.IO.File.Exists(sourcePath))
-                                                             {
-                                                                 link.Delete(); // equivalent to ln -s -f
+                        new ExtractionOptions()
+                        {
+                            ExtractFullPath = true,
+                            Overwrite = true,
+                            WriteSymbolicLink = (sourcePath, targetPath) =>
+                            {
+                                if (!isWindows)
+                                {
+                                    var link = new Mono.Unix.UnixSymbolicLinkInfo(sourcePath);
+                                    if (System.IO.File.Exists(sourcePath))
+                                    {
+                                        link.Delete(); // equivalent to ln -s -f
                                                              }
-                                                             link.CreateSymbolicLinkTo(targetPath);
-                                                         }
-                                                     }
-                                                 });
+                                    link.CreateSymbolicLinkTo(targetPath);
+                                }
+                            }
+                        },
+                        CancellationToken.None);
                     if (!isWindows)
                     {
                         if (reader.Entry.LinkTarget != null)

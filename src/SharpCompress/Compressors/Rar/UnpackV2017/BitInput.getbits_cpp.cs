@@ -41,7 +41,7 @@ public BitInput(bool AllocBuffer)
 //}
 //
 
-public            
+public
 void faddbits(uint Bits)
 {
     // Function wrapped version of inline addbits to save code size.

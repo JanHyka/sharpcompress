@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 
 namespace SharpCompress.Common
 {
@@ -9,7 +10,8 @@ namespace SharpCompress.Common
         /// Extract to specific directory, retaining filename
         /// </summary>
         public static void WriteEntryToDirectory(IEntry entry, string destinationDirectory,
-                                                 ExtractionOptions options, Action<string, ExtractionOptions> write)
+                                                 ExtractionOptions options, CancellationToken cancellationToken,
+                                                 Action<string, ExtractionOptions, CancellationToken> write)
         {
             string destinationFileName;
             string file = Path.GetFileName(entry.Key);
@@ -39,7 +41,7 @@ namespace SharpCompress.Common
                 destinationFileName = Path.Combine(destdir, file);
             }
             else
-            {        
+            {
                 destinationFileName = Path.Combine(fullDestinationDirectoryPath, file);
 
             }
@@ -52,14 +54,14 @@ namespace SharpCompress.Common
                 {
                     throw new ExtractionException("Entry is trying to write a file outside of the destination directory.");
                 }
-                write(destinationFileName, options);
+                write(destinationFileName, options, cancellationToken);
             }
             else if (options.ExtractFullPath && !Directory.Exists(destinationFileName))
             {
                 Directory.CreateDirectory(destinationFileName);
             }
         }
-        
+
         public static void WriteEntryToFile(IEntry entry, string destinationFileName,
                                             ExtractionOptions options,
                                             Action<string, FileMode> openAndWrite)

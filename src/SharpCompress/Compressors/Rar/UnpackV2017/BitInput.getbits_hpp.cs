@@ -20,7 +20,7 @@ internal partial class BitInput
     {
       InAddr=InBit=0;
     }
-    
+
     // Move forward by 'Bits' bits.
     public void addbits(uint _Bits)
     {
@@ -29,7 +29,7 @@ internal partial class BitInput
       InAddr+=Bits>>3;
       InBit=Bits&7;
     }
-    
+
     // Return 16 bits from current position in the buffer.
     // Bit at (InAddr,InBit) has the highest position in returning data.
     public uint getbits()
@@ -53,13 +53,13 @@ internal partial class BitInput
       BitField|=(uint)InBuf[InAddr+4] >> (8-InBit);
       return BitField & 0xffffffff;
     }
-    
+
     //void faddbits(uint Bits);
     //uint fgetbits();
-    
+
     // Check if buffer has enough space for IncPtr bytes. Returns 'true'
     // if buffer will be overflown.
-  private bool Overflow(uint IncPtr) 
+  private bool Overflow(uint IncPtr)
     {
       return InAddr+IncPtr>=MAX_SIZE;
     }

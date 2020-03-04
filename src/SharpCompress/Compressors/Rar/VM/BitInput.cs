@@ -54,11 +54,11 @@ namespace SharpCompress.Compressors.Rar.VM
             return (uint)GetBits();
         }
 
-        /// <summary> 
+        /// <summary>
         /// (also named fgetbits)
         /// </summary>
         /// <returns>
-        /// the bits (unsigned short) 
+        /// the bits (unsigned short)
         /// </returns>
         internal int GetBits()
         {

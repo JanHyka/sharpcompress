@@ -2,6 +2,8 @@
 using System.Buffers.Binary;
 using System.IO;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SharpCompress.Common.Tar.Headers
 {
@@ -30,7 +32,7 @@ namespace SharpCompress.Common.Tar.Headers
 
         internal const int BLOCK_SIZE = 512;
 
-        internal void Write(Stream output)
+        internal async Task WriteAsync(Stream output, CancellationToken cancellationToken)
         {
             byte[] buffer = new byte[BLOCK_SIZE];
 
@@ -56,22 +58,17 @@ namespace SharpCompress.Common.Tar.Headers
                 buffer[156] = (byte)EntryType;
 
                 if (Size >= 0x1FFFFFFFF)
-                {
-                    Span<byte> bytes12 = stackalloc byte[12];
-                    BinaryPrimitives.WriteInt64BigEndian(bytes12.Slice(4), Size);
-                    bytes12[0] |= 0x80;
-                    bytes12.CopyTo(buffer.AsSpan(124));
-                }
+                    WriteLargeSize(buffer);
             }
 
             int crc = RecalculateChecksum(buffer);
             WriteOctalBytes(crc, buffer, 148, 8);
 
-            output.Write(buffer, 0, buffer.Length);
+            await output.WriteAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
 
             if (nameByteCount > 100)
             {
-                WriteLongFilenameHeader(output);
+                await WriteLongFilenameHeaderAsync(output, cancellationToken).ConfigureAwait(false);
                 // update to short name lower than 100 - [max bytes of one character].
                 // subtracting bytes is needed because preventing infinite loop(example code is here).
                 //
@@ -80,14 +77,22 @@ namespace SharpCompress.Common.Tar.Headers
                 //
                 // and then infinite recursion is occured in WriteLongFilenameHeader because truncated.Length is 102.
                 Name = ArchiveEncoding.Decode(ArchiveEncoding.Encode(Name), 0, 100 - ArchiveEncoding.GetEncoding().GetMaxByteCount(1));
-                Write(output);
+                await WriteAsync(output, cancellationToken).ConfigureAwait(false);
             }
         }
 
-        private void WriteLongFilenameHeader(Stream output)
+        private void WriteLargeSize(byte[] buffer)
+        {
+            Span<byte> bytes12 = stackalloc byte[12];
+            BinaryPrimitives.WriteInt64BigEndian(bytes12.Slice(4), Size);
+            bytes12[0] |= 0x80;
+            bytes12.CopyTo(buffer.AsSpan(124));
+        }
+
+        private async Task WriteLongFilenameHeaderAsync(Stream output, CancellationToken cancellationToken)
         {
             byte[] nameBytes = ArchiveEncoding.Encode(Name);
-            output.Write(nameBytes, 0, nameBytes.Length);
+            await output.WriteAsync(nameBytes, 0, nameBytes.Length, cancellationToken).ConfigureAwait(false);
 
             // pad to multiple of BlockSize bytes, and make sure a terminating null is added
             int numPaddingBytes = BLOCK_SIZE - (nameBytes.Length % BLOCK_SIZE);
@@ -95,7 +100,7 @@ namespace SharpCompress.Common.Tar.Headers
             {
                 numPaddingBytes = BLOCK_SIZE;
             }
-            output.Write(new byte[numPaddingBytes], 0, numPaddingBytes);
+            await output.WriteAsync(new byte[numPaddingBytes], 0, numPaddingBytes, cancellationToken).ConfigureAwait(false);
         }
 
         internal bool Read(BinaryReader reader)

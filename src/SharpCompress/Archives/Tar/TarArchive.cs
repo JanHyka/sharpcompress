@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using SharpCompress.Common;
 using SharpCompress.Common.Tar;
 using SharpCompress.Common.Tar.Headers;
@@ -79,7 +80,7 @@ namespace SharpCompress.Archives.Tar
             }
             return false;
         }
-        
+
         /// <summary>
         /// Constructor with a FileInfo object to an existing file.
         /// </summary>
@@ -140,7 +141,7 @@ namespace SharpCompress.Archives.Tar
                             {
                                 using (var memoryStream = new MemoryStream())
                                 {
-                                    entryStream.TransferTo(memoryStream);
+                                    entryStream.TransferTo(memoryStream, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
                                     memoryStream.Position = 0;
                                     var bytes = memoryStream.ToArray();
 

@@ -76,7 +76,7 @@ namespace SharpCompress.Compressors.Rar.UnpackV2017
 //
 //        // This memcpy expanded inline by MSVC. We could also use uint64
 //        // assignment, which seems to provide about the same speed.
-//        memcpy(Dest,Src,8); 
+//        memcpy(Dest,Src,8);
 //
 //        Src+=8;
 //        Dest+=8;
@@ -125,7 +125,7 @@ namespace SharpCompress.Compressors.Rar.UnpackV2017
     }
 
   Inp.addbits(Bits);
-  
+
   // Calculate the distance from the start code for current bit length.
   uint Dist=BitField-Dec.DecodeLen[Bits-1];
 

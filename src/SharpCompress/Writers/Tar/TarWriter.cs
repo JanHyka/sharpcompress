@@ -1,10 +1,13 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using SharpCompress.Common;
 using SharpCompress.Common.Tar.Headers;
 using SharpCompress.Compressors;
 using SharpCompress.Compressors.BZip2;
 using SharpCompress.Compressors.Deflate;
+using SharpCompress.Compressors.Deflate64;
 using SharpCompress.Compressors.LZMA;
 using SharpCompress.IO;
 
@@ -59,6 +62,11 @@ namespace SharpCompress.Writers.Tar
             Write(filename, source, modificationTime, null);
         }
 
+        public override async Task WriteAsync(string filename, Stream source, DateTime? modificationTime, CancellationToken cancellationToken)
+        {
+            await WriteAsync(filename, source, modificationTime, null, cancellationToken).ConfigureAwait(false);
+        }
+
         private string NormalizeFilename(string filename)
         {
             filename = filename.Replace('\\', '/');
@@ -74,6 +82,11 @@ namespace SharpCompress.Writers.Tar
 
         public void Write(string filename, Stream source, DateTime? modificationTime, long? size)
         {
+            WriteAsync(filename, source, modificationTime, size, CancellationToken.None).GetAwaiter().GetResult();
+        }
+
+        public async Task WriteAsync(string filename, Stream source, DateTime? modificationTime, long? size, CancellationToken cancellationToken)
+        {
             if (!source.CanSeek && size == null)
             {
                 throw new ArgumentException("Seekable stream is required if no size is given.");
@@ -81,17 +94,18 @@ namespace SharpCompress.Writers.Tar
 
             long realSize = size ?? source.Length;
 
-            TarHeader header = new TarHeader(WriterOptions.ArchiveEncoding);
-
-            header.LastModifiedTime = modificationTime ?? TarHeader.EPOCH;
-            header.Name = NormalizeFilename(filename);
-            header.Size = realSize;
-            header.Write(OutputStream);
-            size = source.TransferTo(OutputStream);
-            PadTo512(size.Value, false);
+            TarHeader header = new TarHeader(WriterOptions.ArchiveEncoding)
+            {
+                LastModifiedTime = modificationTime ?? TarHeader.EPOCH,
+                Name = NormalizeFilename(filename),
+                Size = realSize
+            };
+            await header.WriteAsync(OutputStream, cancellationToken).ConfigureAwait(false);
+            size = await source.TransferTo(OutputStream, cancellationToken).ConfigureAwait(false);
+            await PadTo512(size.Value, false, cancellationToken).ConfigureAwait(false);
         }
 
-        private void PadTo512(long size, bool forceZeros)
+        private async Task PadTo512(long size, bool forceZeros,CancellationToken cancellationToken)
         {
             int zeros = (int)size % 512;
             if (zeros == 0 && !forceZeros)
@@ -99,7 +113,7 @@ namespace SharpCompress.Writers.Tar
                 return;
             }
             zeros = 512 - zeros;
-            OutputStream.Write(new byte[zeros], 0, zeros);
+            await OutputStream.WriteAsync(new byte[zeros], 0, zeros, cancellationToken).ConfigureAwait(false);
         }
 
         protected override void Dispose(bool isDisposing)
@@ -107,8 +121,8 @@ namespace SharpCompress.Writers.Tar
             if (isDisposing)
             {
                 if (finalizeArchiveOnClose) {
-                    PadTo512(0, true);
-                    PadTo512(0, true);
+                    PadTo512(0, true, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+                    PadTo512(0, true, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
                 }
                 switch (OutputStream)
                 {
@@ -126,5 +140,6 @@ namespace SharpCompress.Writers.Tar
             }
             base.Dispose(isDisposing);
         }
+
     }
 }

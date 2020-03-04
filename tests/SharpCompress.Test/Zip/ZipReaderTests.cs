@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using SharpCompress.Common;
 using SharpCompress.IO;
 using SharpCompress.Readers;
@@ -86,11 +87,12 @@ namespace SharpCompress.Test.Zip
                         if (x % 2 == 0)
                         {
                             reader.WriteEntryToDirectory(SCRATCH_FILES_PATH,
-                                                         new ExtractionOptions()
-                                                         {
-                                                             ExtractFullPath = true,
-                                                             Overwrite = true
-                                                         });
+                                new ExtractionOptions()
+                                {
+                                    ExtractFullPath = true,
+                                    Overwrite = true
+                                },
+                                CancellationToken.None);
                         }
                     }
                 }
@@ -158,7 +160,8 @@ namespace SharpCompress.Test.Zip
                         {
                             ExtractFullPath = true,
                             Overwrite = true
-                        });
+                        },
+                        CancellationToken.None);
                     }
                 }
             }
@@ -177,11 +180,12 @@ namespace SharpCompress.Test.Zip
                         if (!reader.Entry.IsDirectory)
                         {
                             reader.WriteEntryToDirectory(SCRATCH_FILES_PATH,
-                                                         new ExtractionOptions()
-                                                         {
-                                                             ExtractFullPath = true,
-                                                             Overwrite = true
-                                                         });
+                                new ExtractionOptions()
+                                {
+                                    ExtractFullPath = true,
+                                    Overwrite = true
+                                },
+                                CancellationToken.None);
                         }
                     }
                 }
@@ -200,11 +204,12 @@ namespace SharpCompress.Test.Zip
                     if (!reader.Entry.IsDirectory)
                     {
                         reader.WriteEntryToDirectory(SCRATCH_FILES_PATH,
-                                                     new ExtractionOptions()
-                                                     {
-                                                         ExtractFullPath = true,
-                                                         Overwrite = true
-                                                     });
+                            new ExtractionOptions()
+                            {
+                                ExtractFullPath = true,
+                                Overwrite = true
+                            },
+                            CancellationToken.None);
                     }
                 }
                 Assert.False(stream.IsDisposed);
@@ -235,7 +240,8 @@ namespace SharpCompress.Test.Zip
                                                                 {
                                                                     ExtractFullPath = true,
                                                                     Overwrite = true
-                                                                });
+                                                                },
+                                                                CancellationToken.None);
                                                         }
                                                     }
                                                 }
@@ -258,11 +264,12 @@ namespace SharpCompress.Test.Zip
                     {
                         Assert.Equal(CompressionType.Unknown, reader.Entry.CompressionType);
                         reader.WriteEntryToDirectory(SCRATCH_FILES_PATH,
-                                                    new ExtractionOptions()
-                                                    {
-                                                        ExtractFullPath = true,
-                                                        Overwrite = true
-                                                    });
+                            new ExtractionOptions()
+                            {
+                                ExtractFullPath = true,
+                                Overwrite = true
+                            },
+                            CancellationToken.None);
                     }
                 }
             }

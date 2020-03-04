@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading;
 using SharpCompress.Common;
 using SharpCompress.IO;
 using SharpCompress.Readers;
@@ -58,7 +59,8 @@ namespace SharpCompress.Test
                     {
                         ExtractFullPath = true,
                         Overwrite = true
-                    });
+                    },
+                    CancellationToken.None);
                 }
             }
         }

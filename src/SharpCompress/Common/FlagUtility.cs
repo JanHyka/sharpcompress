@@ -6,7 +6,7 @@ namespace SharpCompress.Common
     {
         /// <summary>
         /// Returns true if the flag is set on the specified bit field.
-        /// Currently only works with 32-bit bitfields. 
+        /// Currently only works with 32-bit bitfields.
         /// </summary>
         /// <typeparam name="T">Enumeration with Flags attribute</typeparam>
         /// <param name="bitField">Flagged variable</param>
@@ -20,7 +20,7 @@ namespace SharpCompress.Common
 
         /// <summary>
         /// Returns true if the flag is set on the specified bit field.
-        /// Currently only works with 32-bit bitfields. 
+        /// Currently only works with 32-bit bitfields.
         /// </summary>
         /// <typeparam name="T">Enumeration with Flags attribute</typeparam>
         /// <param name="bitField">Flagged variable</param>
@@ -34,7 +34,7 @@ namespace SharpCompress.Common
 
         /// <summary>
         /// Returns true if the flag is set on the specified bit field.
-        /// Currently only works with 32-bit bitfields. 
+        /// Currently only works with 32-bit bitfields.
         /// </summary>
         /// <param name="bitField">Flagged variable</param>
         /// <param name="flag">Flag to test</param>
@@ -51,7 +51,7 @@ namespace SharpCompress.Common
 
         /// <summary>
         /// Returns true if the flag is set on the specified bit field.
-        /// Currently only works with 32-bit bitfields. 
+        /// Currently only works with 32-bit bitfields.
         /// </summary>
         /// <typeparam name="T">Enumeration with Flags attribute</typeparam>
         /// <param name="bitField">Flagged variable</param>
@@ -65,7 +65,7 @@ namespace SharpCompress.Common
 
         /// <summary>
         /// Returns true if the flag is set on the specified bit field.
-        /// Currently only works with 32-bit bitfields. 
+        /// Currently only works with 32-bit bitfields.
         /// </summary>
         /// <param name="bitField">Flagged variable</param>
         /// <param name="flag">Flag to test</param>

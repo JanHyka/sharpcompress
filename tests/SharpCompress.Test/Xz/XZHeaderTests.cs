@@ -35,7 +35,7 @@ namespace SharpCompress.Test.Xz
         }
 
         [Fact]
-        public void BadVersionIfCrcOkButStreamFlagUnknown() { 
+        public void BadVersionIfCrcOkButStreamFlagUnknown() {
             var bytes = Compressed.Clone() as byte[];
             byte[] streamFlags = { 0x00, 0xF4 };
             byte[] crc = Crc32.Compute(streamFlags).ToLittleEndianBytes();

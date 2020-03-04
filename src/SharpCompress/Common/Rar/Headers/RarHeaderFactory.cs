@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using SharpCompress.IO;
@@ -42,11 +41,11 @@ namespace SharpCompress.Common.Rar.Headers
         private RarHeader TryReadNextHeader(Stream stream)
         {
             RarCrcBinaryReader reader;
-            if (!IsEncrypted) 
+            if (!IsEncrypted)
             {
                 reader = new RarCrcBinaryReader(stream);
-            } 
-            else 
+            }
+            else
             {
                 if (Options.Password == null)
                 {
@@ -66,7 +65,7 @@ namespace SharpCompress.Common.Rar.Headers
                 case HeaderCodeV.RAR4_ARCHIVE_HEADER:
                     {
                         var ah = new ArchiveHeader(header, reader);
-                        if (ah.IsEncrypted == true) 
+                        if (ah.IsEncrypted == true)
                         {
                             //!!! rar5 we don't know yet
                             IsEncrypted = true;

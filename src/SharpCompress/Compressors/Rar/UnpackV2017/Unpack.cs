@@ -40,7 +40,7 @@ namespace SharpCompress.Compressors.Rar.UnpackV2017
         public void DoUnpack(FileHeader fileHeader, Stream readStream, Stream writeStream)
         {
             // as of 12/2017 .NET limits array indexing to using a signed integer
-            // MaxWinSize causes unpack to use a fragmented window when the file 
+            // MaxWinSize causes unpack to use a fragmented window when the file
             // window size exceeds MaxWinSize
             // uggh, that's not how this variable is used, it's the size of the currently allocated window buffer
             //x MaxWinSize = ((uint)int.MaxValue) + 1;
@@ -80,12 +80,12 @@ namespace SharpCompress.Compressors.Rar.UnpackV2017
                 DestUnpSize -= n;
             } while (!Suspended);
         }
-        
+
         public bool Suspended { get; set; }
 
         public long DestSize { get => DestUnpSize; }
 
-        public int Char 
+        public int Char
         {
             get
             {
@@ -98,7 +98,7 @@ namespace SharpCompress.Compressors.Rar.UnpackV2017
             }
         }
 
-        public int PpmEscChar { get => PPMEscChar; set => PPMEscChar = value; } 
+        public int PpmEscChar { get => PPMEscChar; set => PPMEscChar = value; }
 
         public static byte[] EnsureCapacity(byte[] array, int length) {
             return array.Length < length ? new byte[length] : array;

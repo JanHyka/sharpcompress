@@ -19,18 +19,18 @@ namespace SharpCompress.Common.Rar.Headers
     {
         private uint _fileCrc;
 
-        public FileHeader(RarHeader header, RarCrcBinaryReader reader, HeaderType headerType) 
-            : base(header, reader, headerType) 
+        public FileHeader(RarHeader header, RarCrcBinaryReader reader, HeaderType headerType)
+            : base(header, reader, headerType)
         {
         }
 
-        protected override void ReadFinish(MarkingBinaryReader reader) 
+        protected override void ReadFinish(MarkingBinaryReader reader)
         {
-            if (IsRar5) 
+            if (IsRar5)
             {
                 ReadFromReaderV5(reader);
-            } 
-            else 
+            }
+            else
             {
                 ReadFromReaderV4(reader);
             }
@@ -63,8 +63,8 @@ namespace SharpCompress.Common.Rar.Headers
             // but it was already used in RAR 1.5 and Unpack needs to distinguish
             // them.
             CompressionAlgorithm = (byte)((compressionInfo & 0x3f) + 50);
-            
-            // 7th bit (0x0040) defines the solid flag. If it is set, RAR continues to use the compression dictionary left after processing preceding files. 
+
+            // 7th bit (0x0040) defines the solid flag. If it is set, RAR continues to use the compression dictionary left after processing preceding files.
             // It can be set only for file headers and is never set for service headers.
             IsSolid = (compressionInfo & 0x40) == 0x40;
 
@@ -85,7 +85,7 @@ namespace SharpCompress.Common.Rar.Headers
             // TODO: not sure if anything needs to be done to handle the following:
             // If Unix file name contains any high ASCII characters which cannot be correctly converted to Unicode and UTF-8
             // we map such characters to to 0xE080 - 0xE0FF private use Unicode area and insert 0xFFFE Unicode non-character
-            // to resulting string to indicate that it contains mapped characters, which need to be converted back when extracting. 
+            // to resulting string to indicate that it contains mapped characters, which need to be converted back when extracting.
             // Concrete position of 0xFFFE is not defined, we need to search the entire string for it. Such mapped names are not
             // portable and can be correctly unpacked only on the same system where they were created.
             //
@@ -99,7 +99,7 @@ namespace SharpCompress.Common.Rar.Headers
             FileName = ConvertPathV5(Encoding.UTF8.GetString(b, 0, b.Length));
 
             // extra size seems to be redudant since we know the total header size
-            if (ExtraSize != RemainingHeaderBytes(reader)) 
+            if (ExtraSize != RemainingHeaderBytes(reader))
             {
                 throw new InvalidFormatException("rar5 header size / extra size inconsistency");
             }
@@ -169,7 +169,7 @@ namespace SharpCompress.Common.Rar.Headers
                 // drain any trailing bytes of extra record
                 int did = n - RemainingHeaderBytes(reader);
                 int drain = size - did;
-                if (drain > 0) 
+                if (drain > 0)
                 {
                     reader.ReadBytes(drain);
                 }
@@ -181,13 +181,13 @@ namespace SharpCompress.Common.Rar.Headers
         }
 
 
-        private static DateTime ReadExtendedTimeV5(MarkingBinaryReader reader, bool isWindowsTime) 
+        private static DateTime ReadExtendedTimeV5(MarkingBinaryReader reader, bool isWindowsTime)
         {
-            if (isWindowsTime) 
+            if (isWindowsTime)
             {
                 return DateTime.FromFileTime(reader.ReadInt64());
-            } 
-            else 
+            }
+            else
             {
                 return Utility.UnixTimeToDateTime(reader.ReadUInt32());
             }
@@ -199,7 +199,7 @@ namespace SharpCompress.Common.Rar.Headers
             {
                 // replace embedded \\ with valid filename char
                 return path.Replace('\\', '-').Replace('/', '\\');
-            } 
+            }
             return path;
         }
 
@@ -374,20 +374,20 @@ namespace SharpCompress.Common.Rar.Headers
 
         private ushort Flags { get; set; }
 
-        private bool HasFlag(ushort flag) 
+        private bool HasFlag(ushort flag)
         {
             return (Flags & flag) == flag;
         }
 
-        internal uint FileCrc 
-        { 
-            get { 
+        internal uint FileCrc
+        {
+            get {
                 if (IsRar5 && !HasFlag(FileFlagsV5.HAS_CRC32)) {
-//!!! rar5: 
+//!!! rar5:
                     throw new InvalidOperationException("TODO rar5");
                 }
-                return _fileCrc; 
-            } 
+                return _fileCrc;
+            }
             private set => _fileCrc = value;
         }
 
@@ -407,7 +407,7 @@ namespace SharpCompress.Common.Rar.Headers
         //case 29: // rar 3.x compression
         //case 50: // RAR 5.0 compression algorithm.
         internal byte CompressionAlgorithm { get; private set; }
-        
+
         public bool IsSolid { get; private set; }
 
         // unused for UnpackV1 implementation (limitation)
@@ -431,7 +431,7 @@ namespace SharpCompress.Common.Rar.Headers
 
         private bool isEncryptedRar5 = false;
         public bool IsEncrypted => IsRar5 ? isEncryptedRar5: HasFlag(FileFlagsV4.PASSWORD);
-        
+
         internal DateTime? FileLastModifiedTime { get; private set; }
 
         internal DateTime? FileCreatedTime { get; private set; }

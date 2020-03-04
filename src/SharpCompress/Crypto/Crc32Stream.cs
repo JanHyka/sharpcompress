@@ -10,7 +10,7 @@ namespace SharpCompress.Crypto
         public const uint DefaultSeed = 0xffffffffu;
 
         private static uint[] defaultTable;
-        
+
         private readonly uint[] table;
         private uint hash;
 

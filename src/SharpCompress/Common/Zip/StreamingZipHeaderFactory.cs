@@ -2,7 +2,7 @@
 using System.IO;
 using SharpCompress.Common.Zip.Headers;
 using SharpCompress.IO;
-using System.Text;
+using System.Threading;
 
 namespace SharpCompress.Common.Zip
 {
@@ -31,7 +31,7 @@ namespace SharpCompress.Common.Zip
                 if (_lastEntryHeader != null &&
                     (FlagUtility.HasFlag(_lastEntryHeader.Flags, HeaderFlags.UsePostDataDescriptor) || _lastEntryHeader.IsZip64))
                 {
-                    reader = (_lastEntryHeader.Part as StreamingZipFilePart).FixStreamedFileLocation(ref rewindableStream);
+                    reader = (_lastEntryHeader.Part as StreamingZipFilePart).FixStreamedFileLocation(rewindableStream, CancellationToken.None).GetAwaiter().GetResult();
                     long? pos = rewindableStream.CanSeek ? (long?)rewindableStream.Position : null;
                     uint crc = reader.ReadUInt32();
                     if (crc == POST_DATA_DESCRIPTOR)

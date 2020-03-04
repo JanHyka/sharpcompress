@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Zip;
 using SharpCompress.Common;
@@ -165,7 +166,7 @@ namespace SharpCompress.Test.Zip
 
                 WriterOptions writerOptions = new ZipWriterOptions(CompressionType.Deflate);
                 writerOptions.ArchiveEncoding.Default = Encoding.GetEncoding(866);
-                
+
                 archive.SaveTo(scratchPath, writerOptions);
             }
             CompareArchivesByPath(modified, scratchPath);
@@ -185,7 +186,7 @@ namespace SharpCompress.Test.Zip
 
                 WriterOptions writerOptions = new ZipWriterOptions(CompressionType.Deflate);
                 writerOptions.ArchiveEncoding.Default = Encoding.GetEncoding(866);
-                
+
                 archive.SaveTo(scratchPath, writerOptions);
             }
             CompareArchivesByPath(modified, scratchPath);
@@ -280,10 +281,10 @@ namespace SharpCompress.Test.Zip
             using (var archive = ZipArchive.Create())
             {
                 archive.AddAllFromDirectory(SCRATCH_FILES_PATH);
-                
+
                 WriterOptions writerOptions = new ZipWriterOptions(CompressionType.Deflate);
                 writerOptions.ArchiveEncoding.Default = Encoding.GetEncoding(866);
-                
+
                 archive.SaveTo(scratchPath, writerOptions);
             }
             CompareArchivesByPath(unmodified, scratchPath);
@@ -333,7 +334,8 @@ namespace SharpCompress.Test.Zip
                     {
                         ExtractFullPath = true,
                         Overwrite = true
-                    });
+                    },
+                    CancellationToken.None);
                 }
             }
             VerifyFiles();
@@ -387,7 +389,8 @@ namespace SharpCompress.Test.Zip
                     {
                         ExtractFullPath = true,
                         Overwrite = true
-                    });
+                    },
+                    CancellationToken.None);
                 }
             }
             VerifyFiles();
@@ -459,7 +462,7 @@ namespace SharpCompress.Test.Zip
         {
             //windows only because of the paths
             Skip.IfNot(Environment.OSVersion.Platform == PlatformID.Win32NT);
-            
+
             string zipFile = Path.Combine(TEST_ARCHIVES_PATH, "Zip.Evil.zip");
 
             Assert.ThrowsAny<Exception>(() => {
@@ -471,7 +474,8 @@ namespace SharpCompress.Test.Zip
                         {
                             ExtractFullPath = true,
                             Overwrite = true
-                        });
+                        },
+                        CancellationToken.None);
                     }
                 }
             });

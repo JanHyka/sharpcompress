@@ -66,7 +66,7 @@ public void Init(size_t WinSize)
     if (NewMem==null)
       //throw std::bad_alloc();
       throw new InvalidOperationException();
-    
+
     // Clean the window to generate the same output when unpacking corrupt
     // RAR files, which may access to unused areas of sliding dictionary.
     // sharpcompress: don't need this, freshly allocated above
@@ -96,12 +96,12 @@ set {
   if (Item<MemSize[0]) {
     Mem[0][Item] = value;
     return;
-  }                
+  }
   for (uint I=1;I<MemSize.Length;I++)
     if (Item<MemSize[I]) {
       Mem[I][Item-MemSize[I-1]] = value;
       return;
-    }                        
+    }
   Mem[0][0] = value; // Must never happen;
 }
 }

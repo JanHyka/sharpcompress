@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using SharpCompress.Archives;
 using SharpCompress.Common;
 using SharpCompress.IO;
@@ -41,11 +42,12 @@ namespace SharpCompress.Test
                     foreach (var entry in archive.Entries.Where(entry => !entry.IsDirectory))
                     {
                         entry.WriteToDirectory(SCRATCH_FILES_PATH,
-                                               new ExtractionOptions
-                                               {
-                                                   ExtractFullPath = true,
-                                                   Overwrite = true
-                                               });
+                            new ExtractionOptions
+                            {
+                                ExtractFullPath = true,
+                                Overwrite = true
+                            },
+                            CancellationToken.None);
                     }
                     stream.ThrowOnDispose = false;
                 }
@@ -76,11 +78,12 @@ namespace SharpCompress.Test
                         foreach (var entry in archive.Entries.Where(entry => !entry.IsDirectory))
                         {
                             entry.WriteToDirectory(SCRATCH_FILES_PATH,
-                                                   new ExtractionOptions()
-                                                   {
-                                                       ExtractFullPath = true,
-                                                       Overwrite = true
-                                                   });
+                                new ExtractionOptions()
+                                {
+                                    ExtractFullPath = true,
+                                    Overwrite = true
+                                },
+                                CancellationToken.None);
                         }
                     }
                     catch (InvalidFormatException)
@@ -113,7 +116,8 @@ namespace SharpCompress.Test
                         {
                             ExtractFullPath = true,
                             Overwrite = true
-                        });
+                        },
+                        CancellationToken.None);
                 }
             }
             VerifyFiles();
@@ -136,7 +140,8 @@ namespace SharpCompress.Test
                             Overwrite = true,
                             PreserveAttributes = true,
                             PreserveFileTime = true
-                        });
+                        },
+                        CancellationToken.None);
                 }
             }
             VerifyFilesEx();

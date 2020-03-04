@@ -99,7 +99,7 @@ namespace SharpCompress.Compressors.Rar.UnpackV1
 //            public DecodeTable RD;  // Decode repeating distances.
 //            public DecodeTable BD;  // Decode bit lengths in Huffman table.
 //        }
-        
+
 //        private UnpackBlockHeader BlockHeader;
 
         private bool TablesRead5;
@@ -144,7 +144,7 @@ public bool TablePresent;
                 // Check TablesRead5 to be sure that we read tables at least once
                 // regardless of current block header TablePresent flag.
                 // So we can safefly use these tables below.
-                if (!ReadBlockHeader() || 
+                if (!ReadBlockHeader() ||
                     !ReadTables() || !TablesRead5)
                     return;
             }
@@ -159,8 +159,8 @@ public bool TablePresent;
 
               // We use 'while', because for empty block containing only Huffman table,
               // we'll be on the block border once again just after reading the table.
-              while (Inp.InAddr>BlockHeader.BlockStart+BlockHeader.BlockSize-1 || 
-                     Inp.InAddr==BlockHeader.BlockStart+BlockHeader.BlockSize-1 && 
+              while (Inp.InAddr>BlockHeader.BlockStart+BlockHeader.BlockSize-1 ||
+                     Inp.InAddr==BlockHeader.BlockStart+BlockHeader.BlockSize-1 &&
                      Inp.InBit>=BlockHeader.BlockBitSize)
               {
                 if (BlockHeader.LastBlockInFile)
@@ -537,7 +537,7 @@ public bool TablePresent;
 //
 //          // Choose the nearest among WriteBorder and WrPtr actual written border.
 //          // If border is equal to UnpPtr, it means that we have MaxWinSize data ahead.
-//          if (WriteBorder==UnpPtr || 
+//          if (WriteBorder==UnpPtr ||
 //              WrPtr!=UnpPtr && ((WrPtr-UnpPtr)&MaxWinMask)<((WriteBorder-UnpPtr)&MaxWinMask))
 //            WriteBorder=WrPtr;
 //        }
@@ -686,12 +686,12 @@ public bool TablePresent;
               return false;
           //Inp.faddbits((8-Inp.InBit)&7);
           Inp.faddbits((uint)((8-Inp.InBit)&7));
-  
+
           byte BlockFlags=(byte)(Inp.fgetbits()>>8);
           Inp.faddbits(8);
           //uint ByteCount=((BlockFlags>>3)&3)+1; // Block size byte count.
           uint ByteCount=(uint)(((BlockFlags>>3)&3)+1); // Block size byte count.
-  
+
           if (ByteCount==4)
             return false;
 

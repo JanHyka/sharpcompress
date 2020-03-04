@@ -96,13 +96,13 @@ namespace SharpCompress.Test.Zip
             }
             catch (NotSupportedException)
             {
-            }           
+            }
         }
 
         public void RunSingleTest(long files, long filesize, bool set_zip64, bool forward_only, long write_chunk_size = 1024 * 1024, string filename = "zip64-test.zip")
         {
             filename = Path.Combine(SCRATCH2_FILES_PATH, filename);
-            
+
             if (File.Exists(filename))
                 File.Delete(filename);
 
@@ -167,7 +167,7 @@ namespace SharpCompress.Test.Zip
                     count++;
 					if (prev != null)
 						size += prev.Size;
-				
+
 					prev = rd.Entry;
                 }
 

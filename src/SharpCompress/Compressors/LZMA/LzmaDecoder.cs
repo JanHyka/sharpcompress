@@ -464,7 +464,7 @@ namespace SharpCompress.Compressors.LZMA
             set { }
         }
         public override void Flush() { }
-        public override int Read(byte[] buffer, int offset, int count) 
+        public override int Read(byte[] buffer, int offset, int count)
         {
             return 0;
         }

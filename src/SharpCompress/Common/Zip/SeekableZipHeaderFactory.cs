@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using SharpCompress.Common.Zip.Headers;
 using SharpCompress.IO;
-using System.Text;
 
 namespace SharpCompress.Common.Zip
 {

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using SharpCompress.Compressors.Filters;
 
 namespace SharpCompress.IO
@@ -39,7 +41,7 @@ namespace SharpCompress.IO
             bufferStream.Position = 0;
         }
 
-        public void Rewind(MemoryStream buffer)
+        public async Task Rewind(MemoryStream buffer, CancellationToken cancellationToken)
         {
             if (bufferStream.Position >= buffer.Length)
             {
@@ -47,13 +49,13 @@ namespace SharpCompress.IO
             }
             else
             {
-                
-                bufferStream.TransferTo(buffer);
+
+                await bufferStream.TransferTo(buffer, cancellationToken).ConfigureAwait(false);
                 //create new memorystream to allow proper resizing as memorystream could be a user provided buffer
                 //https://github.com/adamhathcock/sharpcompress/issues/306
                 bufferStream = new MemoryStream();
                 buffer.Position = 0;
-                buffer.TransferTo(bufferStream);
+                await buffer.TransferTo(bufferStream, cancellationToken).ConfigureAwait(false);
                 bufferStream.Position = 0;
             }
             isRewound = true;

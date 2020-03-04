@@ -84,7 +84,7 @@ namespace SharpCompress.Common.SevenZip
         {
             var coder = Folder._coders.First();
             switch (coder._methodId._id)
-            {                
+            {
                 case K_LZMA:
                 case K_LZMA2:
                 {

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using SharpCompress.Common;
 
 namespace SharpCompress.Writers
@@ -26,6 +28,8 @@ namespace SharpCompress.Writers
         protected WriterOptions WriterOptions { get; }
 
         public abstract void Write(string filename, Stream source, DateTime? modificationTime);
+
+        public abstract Task WriteAsync(string filename, Stream source, DateTime? modificationTime, CancellationToken cancellationToken);
 
         protected virtual void Dispose(bool isDisposing)
         {

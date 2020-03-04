@@ -3,3 +3,6 @@
 
 # need original files to be windows
 *.txt text eol=crlf
+*.cs text eol=lf
+*.csproj text eol=lf
+*.sln text eol=lf 

@@ -1,5 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using SharpCompress.Common;
 using SharpCompress.Readers;
 using SharpCompress.Readers.Rar;
@@ -11,7 +13,7 @@ namespace SharpCompress.Test.Rar
     {
         [Fact]
         public void Rar_Multi_Reader() {
-            DoRar_Multi_Reader(new string[] { 
+            DoRar_Multi_Reader(new string[] {
                 "Rar.multi.part01.rar",
                 "Rar.multi.part02.rar",
                 "Rar.multi.part03.rar",
@@ -22,7 +24,7 @@ namespace SharpCompress.Test.Rar
 
         [Fact]
         public void Rar5_Multi_Reader() {
-            DoRar_Multi_Reader(new string[] { 
+            DoRar_Multi_Reader(new string[] {
                 "Rar5.multi.part01.rar",
                 "Rar5.multi.part02.rar",
                 "Rar5.multi.part03.rar",
@@ -42,7 +44,8 @@ namespace SharpCompress.Test.Rar
                     {
                         ExtractFullPath = true,
                         Overwrite = true
-                    });
+                    },
+                    CancellationToken.None);
                 }
             }
             VerifyFiles();
@@ -50,7 +53,7 @@ namespace SharpCompress.Test.Rar
 
         [Fact]
         public void Rar_Multi_Reader_Encrypted() {
-            DoRar_Multi_Reader_Encrypted(new string[] { 
+            DoRar_Multi_Reader_Encrypted(new string[] {
                 "Rar.EncryptedParts.part01.rar",
                 "Rar.EncryptedParts.part02.rar",
                 "Rar.EncryptedParts.part03.rar",
@@ -73,11 +76,12 @@ namespace SharpCompress.Test.Rar
                                                           while (reader.MoveToNextEntry())
                                                           {
                                                               reader.WriteEntryToDirectory(SCRATCH_FILES_PATH,
-                                                                                           new ExtractionOptions()
-                                                                                           {
-                                                                                               ExtractFullPath = true,
-                                                                                               Overwrite = true
-                                                                                           });
+                                                                  new ExtractionOptions()
+                                                                  {
+                                                                      ExtractFullPath = true,
+                                                                      Overwrite = true
+                                                                  },
+                                                                  CancellationToken.None);
                                                           }
                                                       }
                                                       VerifyFiles();
@@ -86,7 +90,7 @@ namespace SharpCompress.Test.Rar
 
         [Fact]
         public void Rar_Multi_Reader_Delete_Files() {
-            DoRar_Multi_Reader_Delete_Files(new string[] { 
+            DoRar_Multi_Reader_Delete_Files(new string[] {
                 "Rar.multi.part01.rar",
                 "Rar.multi.part02.rar",
                 "Rar.multi.part03.rar",
@@ -97,7 +101,7 @@ namespace SharpCompress.Test.Rar
 
         [Fact]
         public void Rar5_Multi_Reader_Delete_Files() {
-            DoRar_Multi_Reader_Delete_Files(new string[] { 
+            DoRar_Multi_Reader_Delete_Files(new string[] {
                 "Rar5.multi.part01.rar",
                 "Rar5.multi.part02.rar",
                 "Rar5.multi.part03.rar",
@@ -122,7 +126,8 @@ namespace SharpCompress.Test.Rar
                     {
                         ExtractFullPath = true,
                         Overwrite = true
-                    });
+                    },
+                    CancellationToken.None);
                 }
             }
             foreach (var stream in streams)
@@ -203,16 +208,16 @@ namespace SharpCompress.Test.Rar
         }
 
         [Fact]
-        public void Rar_Entry_Stream() {
-            DoRar_Entry_Stream("Rar.rar");
+        public async Task Rar_Entry_Stream() {
+            await DoRar_Entry_Stream("Rar.rar", CancellationToken.None).ConfigureAwait(false);
         }
 
         [Fact]
-        public void Rar5_Entry_Stream() {
-            DoRar_Entry_Stream("Rar5.rar");
+        public async Task Rar5_Entry_Stream() {
+            await DoRar_Entry_Stream("Rar5.rar", CancellationToken.None).ConfigureAwait(false);
         }
 
-        private void DoRar_Entry_Stream(string filename)
+        private async Task DoRar_Entry_Stream(string filename, CancellationToken cancellationToken)
         {
             using (Stream stream = File.OpenRead(Path.Combine(TEST_ARCHIVES_PATH, filename)))
             using (var reader = ReaderFactory.Open(stream))
@@ -235,7 +240,7 @@ namespace SharpCompress.Test.Rar
 
                             using (FileStream fs = File.OpenWrite(destinationFileName))
                             {
-                                entryStream.TransferTo(fs);
+                                await entryStream.TransferTo(fs, cancellationToken).ConfigureAwait(false);
                             }
                         }
                     }
@@ -260,7 +265,8 @@ namespace SharpCompress.Test.Rar
                     {
                         ExtractFullPath = true,
                         Overwrite = true
-                    });
+                    },
+                    CancellationToken.None);
                 }
             }
             CompareFilesByPath(Path.Combine(SCRATCH_FILES_PATH, "test.dat"),
@@ -283,7 +289,8 @@ namespace SharpCompress.Test.Rar
                     {
                         ExtractFullPath = true,
                         Overwrite = true
-                    });
+                    },
+                    CancellationToken.None);
                 }
             }
             VerifyFiles();
@@ -328,7 +335,8 @@ namespace SharpCompress.Test.Rar
                         {
                             ExtractFullPath = true,
                             Overwrite = true
-                        });
+                        },
+                        CancellationToken.None);
                     }
                 }
             }
@@ -361,7 +369,8 @@ namespace SharpCompress.Test.Rar
                         {
                             ExtractFullPath = true,
                             Overwrite = true
-                        });
+                        },
+                        CancellationToken.None);
                     }
                 }
             }

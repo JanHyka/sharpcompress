@@ -1,52 +1,52 @@
 // Deflate.cs
 // ------------------------------------------------------------------
 //
-// Copyright (c) 2009 Dino Chiesa and Microsoft Corporation.  
+// Copyright (c) 2009 Dino Chiesa and Microsoft Corporation.
 // All rights reserved.
 //
 // This code module is part of DotNetZip, a zipfile class library.
 //
 // ------------------------------------------------------------------
 //
-// This code is licensed under the Microsoft Public License. 
+// This code is licensed under the Microsoft Public License.
 // See the file License.txt for the license details.
 // More info on: http://dotnetzip.codeplex.com
 //
 // ------------------------------------------------------------------
 //
-// last saved (in emacs): 
+// last saved (in emacs):
 // Time-stamp: <2009-October-28 13:44:59>
 //
 // ------------------------------------------------------------------
 //
 // This module defines logic for handling the Deflate or compression.
 //
-// This code is based on multiple sources: 
+// This code is based on multiple sources:
 // - the original zlib v1.2.3 source, which is Copyright (C) 1995-2005 Jean-loup Gailly.
-// - the original jzlib, which is Copyright (c) 2000-2003 ymnk, JCraft,Inc. 
+// - the original jzlib, which is Copyright (c) 2000-2003 ymnk, JCraft,Inc.
 //
-// However, this code is significantly different from both.  
+// However, this code is significantly different from both.
 // The object model is not the same, and many of the behaviors are different.
 //
-// In keeping with the license for these other works, the copyrights for 
+// In keeping with the license for these other works, the copyrights for
 // jzlib and zlib are here.
 //
 // -----------------------------------------------------------------------
 // Copyright (c) 2000,2001,2002,2003 ymnk, JCraft,Inc. All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
-// 
+//
 // 1. Redistributions of source code must retain the above copyright notice,
 // this list of conditions and the following disclaimer.
-// 
-// 2. Redistributions in binary form must reproduce the above copyright 
-// notice, this list of conditions and the following disclaimer in 
+//
+// 2. Redistributions in binary form must reproduce the above copyright
+// notice, this list of conditions and the following disclaimer in
 // the documentation and/or other materials provided with the distribution.
-// 
+//
 // 3. The names of the authors may not be used to endorse or promote products
 // derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED WARRANTIES,
 // INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
 // FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL JCRAFT,
@@ -57,7 +57,7 @@
 // LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 // EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// 
+//
 // -----------------------------------------------------------------------
 //
 // This program is based on zlib-1.1.3; credit to authors
@@ -227,7 +227,7 @@ namespace SharpCompress.Compressors.Deflate
         // and move to the first half later to keep a dictionary of at least wSize
         // bytes. With this organization, matches are limited to a distance of
         // wSize-MAX_MATCH bytes, but this ensures that IO is always
-        // performed with a length multiple of the block size. 
+        // performed with a length multiple of the block size.
         //
         // To do: use the user input buffer as sliding window.
 
@@ -302,7 +302,7 @@ namespace SharpCompress.Compressors.Deflate
         // Depth of each subtree used as tie breaker for trees of equal frequency
         private readonly sbyte[] depth = new sbyte[2 * InternalConstants.L_CODES + 1];
 
-        private int _lengthOffset; // index for literals or lengths 
+        private int _lengthOffset; // index for literals or lengths
 
         // Size of match buffer for literals/lengths.  There are 4 reasons for
         // limiting lit_bufsize to 64K:
@@ -652,7 +652,7 @@ namespace SharpCompress.Compressors.Deflate
             pendingCount += len;
         }
 
-#if NOTNEEDED        
+#if NOTNEEDED
         private void put_byte(byte c)
         {
             pending[pendingCount++] = c;
@@ -815,7 +815,7 @@ namespace SharpCompress.Compressors.Deflate
                     }
                     else
                     {
-                        // literal or match pair 
+                        // literal or match pair
                         // Here, lc is the match length - MIN_MATCH
                         code = Tree.LengthCode[lc];
 
@@ -1651,7 +1651,7 @@ namespace SharpCompress.Compressors.Deflate
             lit_bufsize = 1 << (memLevel + 6);
 
             // Use a single array as the buffer for data pending compression,
-            // the output distance codes, and the output length codes (aka tree).  
+            // the output distance codes, and the output length codes (aka tree).
             // orig comment: This works just fine since the average
             // output size for (length,distance) codes is <= 24 bits.
             pending = new byte[lit_bufsize * 4];
@@ -1660,7 +1660,7 @@ namespace SharpCompress.Compressors.Deflate
 
             // So, for memLevel 8, the length of the pending buffer is 65536. 64k.
             // The first 16k are pending bytes.
-            // The middle slice, of 32k, is used for distance codes. 
+            // The middle slice, of 32k, is used for distance codes.
             // The final 16k are length codes.
 
             compressionLevel = level;
@@ -1745,7 +1745,7 @@ namespace SharpCompress.Compressors.Deflate
                 SetDeflater();
             }
 
-            // no need to flush with change in strategy?  Really? 
+            // no need to flush with change in strategy?  Really?
             compressionStrategy = strategy;
 
             return result;

@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using SharpCompress.Common;
 using SharpCompress.IO;
 
@@ -6,7 +8,7 @@ namespace SharpCompress.Archives
 {
     public static class IArchiveEntryExtensions
     {
-        public static void WriteTo(this IArchiveEntry archiveEntry, Stream streamToWriteTo)
+        public static async Task WriteToAsync(this IArchiveEntry archiveEntry, Stream streamToWriteTo, CancellationToken cancellationToken)
         {
             if (archiveEntry.Archive.Type == ArchiveType.Rar && archiveEntry.Archive.IsSolid)
             {
@@ -31,35 +33,35 @@ namespace SharpCompress.Archives
             {
                 using (Stream s = new ListeningStream(streamListener, entryStream))
                 {
-                    s.TransferTo(streamToWriteTo);
+                    await s.TransferTo(streamToWriteTo, cancellationToken).ConfigureAwait(false);
                 }
             }
             streamListener.FireEntryExtractionEnd(archiveEntry);
         }
-        
+
         /// <summary>
         /// Extract to specific directory, retaining filename
         /// </summary>
-        public static void WriteToDirectory(this IArchiveEntry entry, string destinationDirectory,
-                                            ExtractionOptions options = null)
+        public static void WriteToDirectory(this IArchiveEntry entry, string destinationDirectory, ExtractionOptions options,
+            CancellationToken cancellationToken)
         {
-            ExtractionMethods.WriteEntryToDirectory(entry, destinationDirectory, options,
+            ExtractionMethods.WriteEntryToDirectory(entry, destinationDirectory, options, cancellationToken,
                                               entry.WriteToFile);
         }
 
         /// <summary>
         /// Extract to specific file
         /// </summary>
-        public static void WriteToFile(this IArchiveEntry entry, string destinationFileName,
-                                       ExtractionOptions options = null)
+        public static void WriteToFile(this IArchiveEntry entry, string destinationFileName, ExtractionOptions options,
+            CancellationToken cancellationToken)
         {
-            
+
             ExtractionMethods.WriteEntryToFile(entry, destinationFileName, options,
-                                               (x, fm) =>
+                                               async (x, fm) =>
                                                {
                                                    using (FileStream fs = File.Open(destinationFileName, fm))
                                                    {
-                                                       entry.WriteTo(fs);
+                                                       await entry.WriteToAsync(fs,cancellationToken).ConfigureAwait(false);
                                                    }
                                                });
         }

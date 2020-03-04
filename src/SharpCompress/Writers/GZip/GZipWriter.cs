@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using SharpCompress.Common;
 using SharpCompress.Compressors;
 using SharpCompress.Compressors.Deflate;
@@ -18,7 +20,7 @@ namespace SharpCompress.Writers.GZip
             {
                 destination = new NonDisposingStream(destination);
             }
-            InitalizeStream(new GZipStream(destination, CompressionMode.Compress, 
+            InitalizeStream(new GZipStream(destination, CompressionMode.Compress,
                                            options?.CompressionLevel ?? CompressionLevel.Default,
                                            WriterOptions.ArchiveEncoding.GetEncoding()));
         }
@@ -35,6 +37,11 @@ namespace SharpCompress.Writers.GZip
 
         public override void Write(string filename, Stream source, DateTime? modificationTime)
         {
+            WriteAsync(filename, source, modificationTime, CancellationToken.None).GetAwaiter().GetResult();
+        }
+
+        public override async Task WriteAsync(string filename, Stream source, DateTime? modificationTime, CancellationToken cancellationToken)
+        {
             if (_wroteToStream)
             {
                 throw new ArgumentException("Can only write a single stream to a GZip file.");
@@ -42,7 +49,7 @@ namespace SharpCompress.Writers.GZip
             GZipStream stream = OutputStream as GZipStream;
             stream.FileName = filename;
             stream.LastModified = modificationTime;
-            source.TransferTo(stream);
+            await source.TransferTo(stream, cancellationToken).ConfigureAwait(false);
             _wroteToStream = true;
         }
     }

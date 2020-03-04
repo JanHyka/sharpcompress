@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using SharpCompress.Common;
 
 namespace SharpCompress.Readers
@@ -16,7 +18,7 @@ namespace SharpCompress.Readers
         private bool completed;
         private IEnumerator<TEntry> entriesForCurrentReadStream;
         private bool wroteCurrentEntry;
-        
+
         public event EventHandler<ReaderExtractionEventArgs<IEntry>> EntryExtractionProgress;
 
         public event EventHandler<CompressedBytesReadEventArgs> CompressedBytesRead;
@@ -38,7 +40,7 @@ namespace SharpCompress.Readers
         public abstract TVolume Volume { get; }
 
         /// <summary>
-        /// Current file entry 
+        /// Current file entry
         /// </summary>
         public TEntry Entry => entriesForCurrentReadStream.Current;
 
@@ -131,8 +133,8 @@ namespace SharpCompress.Readers
 
         private void Skip()
         {
-            if (ArchiveType != ArchiveType.Rar 
-                && !Entry.IsSolid 
+            if (ArchiveType != ArchiveType.Rar
+                && !Entry.IsSolid
                 && Entry.CompressedSize > 0)
             {
                 //not solid and has a known compressed size then we can skip raw bytes.
@@ -156,6 +158,11 @@ namespace SharpCompress.Readers
 
         public void WriteEntryTo(Stream writableStream)
         {
+            WriteEntryToAsync(writableStream, CancellationToken.None).GetAwaiter().GetResult();
+        }
+
+        public async Task WriteEntryToAsync(Stream writableStream, CancellationToken cancellationToken)
+        {
             if (wroteCurrentEntry)
             {
                 throw new ArgumentException("WriteEntryTo or OpenEntryStream can only be called once.");
@@ -165,16 +172,16 @@ namespace SharpCompress.Readers
                 throw new ArgumentNullException("A writable Stream was required.  Use Cancel if that was intended.");
             }
 
-            Write(writableStream);
+            await Write(writableStream, cancellationToken).ConfigureAwait(false);
             wroteCurrentEntry = true;
         }
 
-        internal void Write(Stream writeStream)
+        internal async Task Write(Stream writeStream, CancellationToken cancellationToken)
         {
             var streamListener = this as IReaderExtractionListener;
             using (Stream s = OpenEntryStream())
             {
-                s.TransferTo(writeStream, Entry, streamListener);
+                await s.TransferTo(writeStream, Entry, streamListener, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -228,5 +235,6 @@ namespace SharpCompress.Readers
         {
             EntryExtractionProgress?.Invoke(this, new ReaderExtractionEventArgs<IEntry>(entry, new ReaderProgress(entry, bytesTransferred, iterations)));
         }
+
     }
 }

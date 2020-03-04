@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using SharpCompress.Common;
 
 namespace SharpCompress.Readers
@@ -20,6 +22,8 @@ namespace SharpCompress.Readers
         /// </summary>
         /// <param name="writableStream"></param>
         void WriteEntryTo(Stream writableStream);
+
+        Task WriteEntryToAsync(Stream writableStream, CancellationToken cancellationToken);
 
         bool Cancelled { get; }
         void Cancel();

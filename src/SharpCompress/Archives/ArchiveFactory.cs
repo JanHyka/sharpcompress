@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using SharpCompress.Archives.GZip;
 using SharpCompress.Archives.Rar;
 using SharpCompress.Archives.SevenZip;
@@ -134,14 +135,14 @@ namespace SharpCompress.Archives
         /// <summary>
         /// Extract to specific directory, retaining filename
         /// </summary>
-        public static void WriteToDirectory(string sourceArchive, string destinationDirectory,
+        public static void WriteToDirectory(string sourceArchive, string destinationDirectory, CancellationToken cancellationToken,
                                             ExtractionOptions options = null)
         {
             using (IArchive archive = Open(sourceArchive))
             {
                 foreach (IArchiveEntry entry in archive.Entries)
                 {
-                    entry.WriteToDirectory(destinationDirectory, options);
+                    entry.WriteToDirectory(destinationDirectory, options, cancellationToken);
                 }
             }
         }

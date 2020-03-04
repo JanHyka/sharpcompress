@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using SharpCompress.Common.Zip.Headers;
 using SharpCompress.Compressors.Deflate;
 using SharpCompress.IO;
@@ -33,7 +35,7 @@ namespace SharpCompress.Common.Zip
             return _decompressionStream;
         }
 
-        internal BinaryReader FixStreamedFileLocation(ref RewindableStream rewindableStream)
+        internal async Task<BinaryReader> FixStreamedFileLocation(RewindableStream rewindableStream, CancellationToken cancellationToken)
         {
             if (Header.IsDirectory)
             {
@@ -50,7 +52,7 @@ namespace SharpCompress.Common.Zip
                 DeflateStream deflateStream = _decompressionStream as DeflateStream;
                 if (deflateStream != null)
                 {
-                    rewindableStream.Rewind(deflateStream.InputBuffer);
+                    await rewindableStream.Rewind(deflateStream.InputBuffer, cancellationToken).ConfigureAwait(false);
                 }
                 Skipped = true;
             }

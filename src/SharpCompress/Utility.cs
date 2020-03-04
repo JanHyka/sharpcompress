@@ -2,6 +2,8 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using SharpCompress.Readers;
 
 namespace SharpCompress
@@ -222,17 +224,17 @@ namespace SharpCompress
             return sTime.AddSeconds(unixtime);
         }
 
-        public static long TransferTo(this Stream source, Stream destination)
+        public static async Task<long> TransferTo(this Stream source, Stream destination, CancellationToken cancellationToken)
         {
             byte[] array = GetTransferByteArray();
             try
             {
                 int count;
                 long total = 0;
-                while (ReadTransferBlock(source, array, out count))
+                while ((count = await ReadTransferBlock(source, array, cancellationToken).ConfigureAwait(false)) > 0)
                 {
                     total += count;
-                    destination.Write(array, 0, count);
+                    await destination.WriteAsync(array, 0, count, cancellationToken).ConfigureAwait(false);
                 }
                 return total;
             }
@@ -242,7 +244,7 @@ namespace SharpCompress
             }
         }
 
-        public static long TransferTo(this Stream source, Stream destination, Common.Entry entry, IReaderExtractionListener readerExtractionListener)
+        public static async Task<long> TransferTo(this Stream source, Stream destination, Common.Entry entry, IReaderExtractionListener readerExtractionListener, CancellationToken cancellationToken)
         {
             byte[] array = GetTransferByteArray();
             try
@@ -250,10 +252,10 @@ namespace SharpCompress
                 int count;
                 var iterations = 0;
                 long total = 0;
-                while (ReadTransferBlock(source, array, out count))
+                while ((count = await ReadTransferBlock(source, array, cancellationToken).ConfigureAwait(false)) > 0)
                 {
                     total += count;
-                    destination.Write(array, 0, count);
+                    await destination.WriteAsync(array, 0, count, cancellationToken).ConfigureAwait(false);
                     iterations++;
                     readerExtractionListener.FireEntryExtractionProgress(entry, total, iterations);
                 }
@@ -265,9 +267,9 @@ namespace SharpCompress
             }
         }
 
-        private static bool ReadTransferBlock(Stream source, byte[] array, out int count)
+        private static async Task<int> ReadTransferBlock(Stream source, byte[] array, CancellationToken cancellationToken)
         {
-            return (count = source.Read(array, 0, array.Length)) != 0;
+            return await source.ReadAsync(array, 0, array.Length).ConfigureAwait(false);
         }
 
         private static byte[] GetTransferByteArray()

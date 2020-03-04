@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using SharpCompress.Archives;
 using SharpCompress.Archives.GZip;
 using Xunit;
@@ -21,7 +22,7 @@ namespace SharpCompress.Test.GZip
             using (var archive = ArchiveFactory.Open(stream))
             {
                 var entry = archive.Entries.First();
-                entry.WriteToFile(Path.Combine(SCRATCH_FILES_PATH, entry.Key));
+                entry.WriteToFile(Path.Combine(SCRATCH_FILES_PATH, entry.Key), default, CancellationToken.None);
             }
             CompareArchivesByPath(Path.Combine(SCRATCH_FILES_PATH, "Tar.tar"),
                 Path.Combine(TEST_ARCHIVES_PATH, "Tar.tar"));
@@ -34,7 +35,7 @@ namespace SharpCompress.Test.GZip
             using (var archive = GZipArchive.Open(stream))
             {
                 var entry = archive.Entries.First();
-                entry.WriteToFile(Path.Combine(SCRATCH_FILES_PATH, entry.Key));
+                entry.WriteToFile(Path.Combine(SCRATCH_FILES_PATH, entry.Key), default, CancellationToken.None);
             }
             CompareArchivesByPath(Path.Combine(SCRATCH_FILES_PATH, "Tar.tar"),
                 Path.Combine(TEST_ARCHIVES_PATH, "Tar.tar"));

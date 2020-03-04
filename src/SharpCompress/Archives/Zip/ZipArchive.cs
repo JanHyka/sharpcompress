@@ -22,7 +22,7 @@ namespace SharpCompress.Archives.Zip
         /// if the compression method is set to deflate
         /// </summary>
         public CompressionLevel DeflateCompressionLevel { get; set; }
-        
+
         /// <summary>
         /// Constructor expects a filepath to an existing file.
         /// </summary>
@@ -55,7 +55,7 @@ namespace SharpCompress.Archives.Zip
             stream.CheckNotNull(nameof(stream));
             return new ZipArchive(stream, readerOptions ?? new ReaderOptions());
         }
-        
+
         public static bool IsZipFile(string filePath, string password = null)
         {
             return IsZipFile(new FileInfo(filePath), password);
@@ -95,7 +95,7 @@ namespace SharpCompress.Archives.Zip
                 return false;
             }
         }
-        
+
         /// <summary>
         /// Constructor with a FileInfo object to an existing file.
         /// </summary>

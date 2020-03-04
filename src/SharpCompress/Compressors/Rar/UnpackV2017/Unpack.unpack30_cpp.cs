@@ -285,7 +285,7 @@ bool ReadEndOfBlock()
   // "1"  - no new file, new table just here.
   // "00" - new file,    no new table.
   // "01" - new file,    new table (in beginning of next file).
-  
+
   if ((BitField & 0x8000)!=0)
   {
     NewTable=true;
@@ -310,7 +310,7 @@ bool ReadEndOfBlock()
 
 bool ReadVMCode()
 {
-  // Entire VM code is guaranteed to fully present in block defined 
+  // Entire VM code is guaranteed to fully present in block defined
   // by current Huffman table. Compressor checks that VM code does not cross
   // Huffman block boundaries.
   uint FirstByte=Inp.getbits()>>8;
@@ -421,7 +421,7 @@ bool AddVMCode(uint FirstByte,byte[] Code,int CodeSize)
     Filters30[Filters30.Count-1]=Filter=new UnpackFilter30();
     StackFilter.ParentFilter=(uint)(Filters30.Count-1);
 
-    // Reserve one item to store the data block length of our new filter 
+    // Reserve one item to store the data block length of our new filter
     // entry. We'll set it to real block length below, after reading it.
     // But we need to initialize it now, because when processing corrupt
     // data, we can access this item even before we set it to real value.
@@ -454,7 +454,7 @@ bool AddVMCode(uint FirstByte,byte[] Code,int CodeSize)
   }
   size_t StackPos=(uint)(this.PrgStack.Count-EmptyCount);
   PrgStack[(int)StackPos]=StackFilter;
- 
+
   uint BlockStart=RarVM.ReadData(VMCodeInp);
   if ((FirstByte & 0x40)!=0)
     BlockStart+=258;
@@ -469,7 +469,7 @@ bool AddVMCode(uint FirstByte,byte[] Code,int CodeSize)
   else
   {
     // Set the data block size to same value as the previous block size
-    // for same filter. It is possible for corrupt data to access a new 
+    // for same filter. It is possible for corrupt data to access a new
     // and not filled yet item of OldFilterLengths array here. This is why
     // we set new OldFilterLengths items to zero above.
     StackFilter.BlockLength=FiltPos<OldFilterLengths.Count ? OldFilterLengths[(int)FiltPos]:0;
@@ -637,7 +637,7 @@ void UnpWriteBuf30()
       }
     }
   }
-      
+
   UnpWriteArea(WrittenBorder,UnpPtr);
   WrPtr=UnpPtr;
 }
@@ -665,7 +665,7 @@ bool ReadTables30()
     return(PPM.DecodeInit(this,PPMEscChar));
   }
   UnpBlockType=BLOCK_LZ;
-  
+
   PrevLowDist=0;
   LowDistRepCount=0;
 
