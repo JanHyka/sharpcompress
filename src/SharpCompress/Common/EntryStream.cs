@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using SharpCompress.Readers;
 
 namespace SharpCompress.Common
@@ -56,14 +58,18 @@ namespace SharpCompress.Common
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            int read = _stream.Read(buffer, offset, count);
+            throw new NotImplementedException();
+        }
+
+        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            int read = await _stream.ReadAsync(buffer, offset, count, cancellationToken).ConfigureAwait(false);
             if (read <= 0)
             {
                 _completed = true;
             }
             return read;
         }
-
         public override int ReadByte()
         {
             int value = _stream.ReadByte();
@@ -87,6 +93,11 @@ namespace SharpCompress.Common
         public override void Write(byte[] buffer, int offset, int count)
         {
             throw new NotSupportedException();
+        }
+
+        public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }
